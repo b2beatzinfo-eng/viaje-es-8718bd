@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Spagna 2026 · Timeline del viaggio</title>
+  <meta name="description" content="Timeline interattiva del viaggio in Spagna: Siviglia, Málaga, Madrid, Valencia · 15-26 giugno 2026." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#e0532a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Spagna 2026" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <span class="brand-flag">🇪🇸</span>
+        <span class="brand-text">
+          <strong>Spagna 2026</strong>
+          <small>Siviglia · Málaga · Madrid · Valencia</small>
+        </span>
+      </div>
+      <div class="appbar-actions">
+        <button id="btnMap" class="iconbtn iconbtn-primary" title="Mappa interattiva del viaggio">🗺 Mappa</button>
+        <button id="btnRemind" class="iconbtn" title="Promemoria 10 min prima di ogni tappa" aria-pressed="false">🔔 Promemoria</button>
+        <button id="btnGeo" class="iconbtn" title="Avvisi quando sei vicino a un luogo" aria-pressed="false">📍 Avvisi</button>
+        <button id="btnInstall" class="iconbtn" hidden title="Installa l'app sul dispositivo">⬇️ Installa</button>
+      </div>
+    </div>
+    <div id="tripStatus" class="tripstatus" role="status"></div>
+  </header>
+
+  <nav id="cityBar" class="citybar" aria-label="Città"></nav>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-ic" aria-hidden="true">🔎</span>
+      <input id="search" type="search" inputmode="search" placeholder="Cerca tappe, luoghi, ristoranti…" autocomplete="off" />
+      <button id="searchClear" class="search-clear" hidden aria-label="Pulisci ricerca">✕</button>
+    </div>
+    <div class="filters" id="filters">
+      <button class="chip" data-filter="star">⭐ Top</button>
+      <button class="chip" data-filter="todo">☐ Da fare</button>
+      <button class="chip" data-filter="photo">📷 Con foto</button>
+    </div>
+  </div>
+
+  <main id="app" class="app"><!-- timeline renderizzata da app.js --></main>
+
+  <p id="noResults" class="noresults" hidden>Nessun risultato. Prova a cambiare ricerca o filtri.</p>
+
+  <footer class="foot">
+    <p>Itinerario personale · dati da <em>Spagna 2026.docx</em>. Foto: Wikimedia Commons (licenza libera).</p>
+    <p class="foot-mini">Suggerimento: aggiungi questa pagina alla schermata Home per usarla come app.</p>
+  </footer>
+
+  <!-- Lightbox foto -->
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lb-close" aria-label="Chiudi">✕</button>
+    <button class="lb-nav lb-prev" aria-label="Precedente">‹</button>
+    <img id="lbImg" alt="" />
+    <button class="lb-nav lb-next" aria-label="Successiva">›</button>
+    <div id="lbCaption" class="lb-caption"></div>
+  </div>
+
+  <!-- Toast avvisi prossimità -->
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- Mappa interattiva -->
+  <div id="mapModal" class="mapmodal" hidden>
+    <div class="mapbar">
+      <strong class="maptitle">🗺 Mappa del viaggio</strong>
+      <div class="mapchips" id="mapCities"></div>
+      <label class="mapopt"><input type="checkbox" id="optRoutes" checked> 🧭 Percorsi</label>
+      <label class="mapopt"><input type="checkbox" id="optAlts"> 🔄 Alternative</label>
+      <button id="mapClose" class="iconbtn" aria-label="Chiudi mappa">✕</button>
+    </div>
+    <div id="map"></div>
+    <div class="maplegend" id="mapLegend"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="data.js"></script>
+  <script src="media.js"></script>
+  <script src="alts.js"></script>
+  <script src="geo.js"></script>
+  <script src="bookings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
