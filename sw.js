@@ -1,5 +1,5 @@
 /* Service worker · Spagna 2026 */
-const VER = "spagna-2026-v7";
+const VER = "spagna-2026-v8";
 const SHELL = [
   "./",
   "./index.html",

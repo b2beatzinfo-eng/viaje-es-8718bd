@@ -704,6 +704,7 @@
   const CITY_COLOR = { sev: "#e0532a", mal: "#0f9aa3", mad: "#b02e6b", val: "#ef8a00" };
   const mapModal = $("#mapModal");
   let LMAP = null, layersByCity = {}, routesByCity = {}, altLayer = null;
+  let posWatch = null, posMarker = null, posCircle = null, posCentered = false;
   const activeCities = new Set(TRIP.cities.map(c => c.id));
 
   function pinIcon(color, label, star) {
@@ -816,13 +817,41 @@
       renderMapChips();
       $("#optRoutes").onchange = refreshMapLayers;
       $("#optAlts").onchange = refreshMapLayers;
+      $("#btnLocate").onclick = toggleLocate;
     }
     setTimeout(() => { LMAP.invalidateSize(); refreshMapLayers(); }, 60);
   }
-  function closeMap() { mapModal.hidden = true; }
+  function closeMap() { mapModal.hidden = true; stopLocate(); }
   if (window.L) { $("#btnMap").onclick = openMap; $("#mapClose").onclick = closeMap; }
   else { $("#btnMap").onclick = () => toast("Mappa non disponibile (libreria non caricata, serve connessione)."); }
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !mapModal.hidden) closeMap(); });
+
+  // ---- la mia posizione in tempo reale sulla mappa ----
+  function toggleLocate() { if (posWatch != null) stopLocate(); else startLocate(); }
+  function stopLocate() {
+    if (posWatch != null) { try { navigator.geolocation.clearWatch(posWatch); } catch (e) {} posWatch = null; }
+    if (posMarker && LMAP) { LMAP.removeLayer(posMarker); } posMarker = null;
+    if (posCircle && LMAP) { LMAP.removeLayer(posCircle); } posCircle = null;
+    posCentered = false;
+    const b = $("#btnLocate"); if (b) { b.setAttribute("aria-pressed", "false"); b.textContent = "📍 La mia posizione"; }
+  }
+  function startLocate() {
+    if (!("geolocation" in navigator)) { toast("Geolocalizzazione non disponibile su questo dispositivo."); return; }
+    const b = $("#btnLocate"); b.setAttribute("aria-pressed", "true"); b.textContent = "📍 Localizzazione…";
+    posWatch = navigator.geolocation.watchPosition(p => {
+      const la = p.coords.latitude, lo = p.coords.longitude, acc = p.coords.accuracy || 0;
+      const ll = [la, lo];
+      if (!posMarker) {
+        posMarker = L.marker(ll, { icon: L.divIcon({ className: "", iconSize: [20, 20], iconAnchor: [10, 10], html: '<div class="mk-me"></div>' }), zIndexOffset: 2000, interactive: false }).addTo(LMAP);
+        posCircle = L.circle(ll, { radius: acc, color: "#1a73e8", weight: 1, fillColor: "#1a73e8", fillOpacity: .12 }).addTo(LMAP);
+      } else { posMarker.setLatLng(ll); posCircle.setLatLng(ll).setRadius(acc); }
+      b.textContent = "📍 Posizione attiva";
+      if (!posCentered) { posCentered = true; LMAP.setView(ll, Math.max(LMAP.getZoom(), 15)); }
+    }, e => {
+      if (e && e.code === 1) { toast("Permesso posizione negato: attivalo per vederti sulla mappa."); stopLocate(); }
+      else { toast("📍 Cerco il segnale GPS…", 3000); if (posWatch != null && b) b.textContent = posMarker ? "📍 Posizione attiva" : "📍 Cerco segnale…"; }
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 25000 });
+  }
 
   // ---- PWA ----
   if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {})); }

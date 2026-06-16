@@ -166,6 +166,12 @@ details.box .box-body{ padding:2px 16px 14px; }
 .tr-link{ font-weight:700; text-decoration:none; color:var(--accent); }
 .tr-link:active{ opacity:.7; }
 
+/* puntino "la mia posizione" sulla mappa */
+.mk-me{ width:18px; height:18px; border-radius:50%; background:#1a73e8; border:3px solid #fff; box-shadow:0 0 0 2px rgba(26,115,232,.5), 0 1px 4px rgba(0,0,0,.4); }
+.mk-me::after{ content:""; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(26,115,232,.5); animation:mepulse 1.8s ease-out infinite; }
+@keyframes mepulse{ 0%{ transform:scale(.6); opacity:.9; } 100%{ transform:scale(1.6); opacity:0; } }
+#btnLocate[aria-pressed="true"]{ background:#1a73e8; color:#fff; border-color:transparent; }
+
 /* marker casa sulla mappa */
 .mk-home{ width:32px; height:32px; border-radius:50%; background:#fff; border:3px solid #333; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 6px rgba(0,0,0,.4); }
 
